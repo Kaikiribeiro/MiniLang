@@ -1,0 +1,5 @@
+algoritmo {
+  if (x ! 10) {
+  }
+}
+fim_algoritmo

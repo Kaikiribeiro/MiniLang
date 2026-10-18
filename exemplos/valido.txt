@@ -1,0 +1,10 @@
+algoritmo {
+  int x;
+  double y = 2.5;
+  if (x < 10) {
+    x = x + 1;
+  } else {
+    y = y * 2;
+  }
+}
+fim_algoritmo

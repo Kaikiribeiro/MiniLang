@@ -4,18 +4,23 @@ Projeto em Java que valida se um código-fonte escrito em **MiniLang**, uma ling
 
 Autor: Kaiki Ribeiro Avelino
 
+A especificação completa da linguagem está em [ESPECIFICACAO.md](ESPECIFICACAO.md).
+
 ## A linguagem
 
-Um programa MiniLang tem esta estrutura: a palavra de início, chaves, zero ou mais declarações de variáveis, um bloco if-else e a palavra de término.
+Um programa MiniLang tem esta estrutura: a palavra de início, chaves, zero ou mais declarações de variáveis, zero ou mais comandos (`if` ou `while`) e a palavra de término.
 
 ```
 algoritmo {
-  int x;
-  double y = 2.5;
-  if (x < 10) {
+  int x = 0;
+  int y = 0;
+  while (x < 10) {
+    if (x == 5) {
+      y = y + 1;
+    } else {
+      y = y + 2;
+    }
     x = x + 1;
-  } else {
-    y = y * 2;
   }
 }
 fim_algoritmo
@@ -27,21 +32,29 @@ O enunciado deixou alguns pontos em aberto. Nesta implementação:
 
 - **O corpo do programa fica entre chaves**, entre `algoritmo` e `fim_algoritmo`.
 - **O `else` é opcional**, como em Java. Um `if` sem `else` também é válido.
-- **Dentro das chaves do `if` e do `else` só entram atribuições**, como `x = x + 1;`.
-- **A palavra `while` é reconhecida pelo Lexer**, mas não faz parte da gramática, porque a estrutura pede um único bloco if-else.
+- **O programa aceita zero ou mais comandos** (`if` ou `while`) depois das declarações, um depois do outro.
+- **Dentro de um bloco cabem atribuições e outros `if` e `while`**, em qualquer nível de aninhamento. Assim são possíveis `while` sozinho, `if` com `while` dentro e `while` com `if` dentro.
+- **A condição pode ser `true`, `false` ou uma comparação**, como `x < 10`.
+- **As declarações vêm antes dos comandos.** Declarar uma variável depois de um comando gera erro.
 
 ## Gramática (EBNF)
 
 Chaves `{ }` significam "zero ou mais vezes" e colchetes `[ ]` significam "opcional".
 
 ```
-programa    → "algoritmo" "{" { declaracao } ifElse "}" "fim_algoritmo" EOF
+programa    → "algoritmo" "{" { declaracao } { comando } "}" "fim_algoritmo" EOF
 declaracao  → ( "int" | "double" ) ID [ "=" expressao ] ";"
+
+comando     → ifElse | enquanto
 ifElse      → "if" "(" condicao ")" bloco [ "else" bloco ]
-bloco       → "{" { atribuicao } "}"
+enquanto    → "while" "(" condicao ")" bloco
+bloco       → "{" { instrucao } "}"
+instrucao   → atribuicao | comando
 atribuicao  → ID "=" expressao ";"
-condicao    → expressao opRel expressao
+
+condicao    → "true" | "false" | expressao opRel expressao
 opRel       → "==" | "!=" | "<" | ">" | "<=" | ">="
+
 expressao   → termo { ( "+" | "-" ) termo }
 termo       → fator { ( "*" | "/" ) fator }
 fator       → NUMERO | ID
@@ -49,9 +62,11 @@ fator       → NUMERO | ID
 
 A separação em `expressao`, `termo` e `fator` faz com que `*` e `/` tenham prioridade sobre `+` e `-`.
 
+As regras `bloco` e `comando` se chamam mutuamente (um bloco contém comandos, e um comando contém blocos). Essa recursão é o que permite aninhar `if` e `while` à vontade.
+
 ## Tokens
 
-- **Palavras reservadas:** `algoritmo`, `fim_algoritmo`, `int`, `double`, `if`, `else`, `while`
+- **Palavras reservadas:** `algoritmo`, `fim_algoritmo`, `int`, `double`, `if`, `else`, `while`, `true`, `false`
 - **Símbolos:** `(` `)` `{` `}` `;` `=` `+` `-` `*` `/` `==` `!=` `<` `>` `<=` `>=`
 - **Identificador:** nome de variável. Começa com letra ou `_` e continua com letras, dígitos ou `_`.
 - **Número:** inteiro (`10`) ou decimal (`2.5`).
@@ -70,6 +85,12 @@ O `Parser` usa quatro métodos de apoio: `peek()` (olha o token atual), `avancar
 
 O programa **para no primeiro erro** encontrado.
 
+## Limitações
+
+- Expressões **não aceitam parênteses**: `(2 + 3) * 4` é inválido.
+- Não há números negativos escritos com sinal (`-5`).
+- Só a **sintaxe** é verificada. O programa não confere se as variáveis foram declaradas, se os tipos combinam nem executa o código.
+
 ## Estrutura do repositório
 
 ```
@@ -80,8 +101,9 @@ O programa **para no primeiro erro** encontrado.
 │   ├── Lexer.java
 │   └── Parser.java
 ├── exemplos/
-│   ├── valido.txt
+│   ├── valido*.txt
 │   └── erro-*.txt
+├── ESPECIFICACAO.md
 └── README.md
 ```
 
@@ -104,11 +126,29 @@ No IntelliJ, basta abrir o projeto e executar a classe `Main`.
 
 ### Código válido
 
-Arquivo `exemplos/valido.txt`:
+Arquivos como `exemplos/valido.txt`, `exemplos/valido-while.txt`, `exemplos/valido-while-com-if.txt`, `exemplos/valido-if-com-while.txt` e `exemplos/valido-booleano.txt` produzem:
 
 ```
 Codigo sintaticamente correto!
 ```
+
+Exemplo com `while` sozinho e condição booleana (`exemplos/valido-booleano.txt`):
+
+```
+algoritmo {
+  int x = 0;
+  while (true) {
+    if (false) {
+      x = 1;
+    } else {
+      x = 2;
+    }
+  }
+}
+fim_algoritmo
+```
+
+O programa só confere a estrutura e não executa o código, por isso o `while (true)` não trava.
 
 ### Erros
 
@@ -122,6 +162,18 @@ Erro na linha 3, coluna 3: esperado ';', mas encontrado 'double'
 
 ```
 Erro na linha 4, coluna 14: esperado ')', mas encontrado '{'
+```
+
+**Falta o `)` no `while`** (`exemplos/erro-while-sem-parentese.txt`):
+
+```
+Erro na linha 3, coluna 17: esperado ')', mas encontrado '{'
+```
+
+**Booleano seguido de operador** (`exemplos/erro-booleano.txt`, com `if (true < 1)`):
+
+```
+Erro na linha 2, coluna 12: esperado ')', mas encontrado '<'
 ```
 
 **Caractere inválido** (`exemplos/erro-caractere-invalido.txt`):

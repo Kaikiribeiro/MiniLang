@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        String codigo = Files.readString(Path.of("exemplos/valido.txt"));
+        String codigo = Files.readString(Path.of("exemplos/erro-declaracao-depois-comando.txt"));
 
         Lexer lexer = new Lexer(codigo);
         List<Token> tokens = lexer.tokenizar();

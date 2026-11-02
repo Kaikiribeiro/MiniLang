@@ -1,0 +1,6 @@
+algoritmo {
+  if (x < 10) {
+  }
+  int y;
+}
+fim_algoritmo

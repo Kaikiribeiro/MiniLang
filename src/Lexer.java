@@ -37,15 +37,7 @@ public class Lexer {
             proximoChar();
         }
     }
-
-    public void teste() {
-        while (!fim()) {
-            int l = linha;
-            int c = coluna;
-            char letra = proximoChar();
-            System.out.println("[" + letra + "] linha " + l + ", coluna " + c);
-        }
-    }
+    
     private boolean casar(char esperado) {
         if (fim() || atual() != esperado) {
             return false;

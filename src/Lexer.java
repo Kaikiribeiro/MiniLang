@@ -37,7 +37,7 @@ public class Lexer {
             proximoChar();
         }
     }
-    
+
     private boolean casar(char esperado) {
         if (fim() || atual() != esperado) {
             return false;

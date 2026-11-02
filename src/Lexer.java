@@ -63,6 +63,8 @@ public class Lexer {
             case "while": return TokenType.ENQUANTO;
             case "algoritmo": return TokenType.ALGORITMO;
             case "fim_algoritmo": return TokenType.FIM_ALGORITMO;
+            case "true": return TokenType.LOGICO;
+            case "false": return TokenType.LOGICO;
             default:              return TokenType.IDENTIFICADOR;
         }
     }
@@ -165,6 +167,4 @@ public class Lexer {
         tokens.add(new Token(TokenType.EOF, "", linha, coluna));
         return tokens;
     }
-
-
 }

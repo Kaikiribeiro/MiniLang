@@ -26,7 +26,5 @@ public enum TokenType {
     IDENTIFICADOR,
     SE,
     SENAO,
-    ENQUANTO,
-
-
+    ENQUANTO
 }

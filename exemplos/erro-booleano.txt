@@ -1,0 +1,5 @@
+algoritmo {
+  if (true < 1) {
+  }
+}
+fim_algoritmo

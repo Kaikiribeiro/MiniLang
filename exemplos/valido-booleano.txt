@@ -1,0 +1,11 @@
+algoritmo {
+  int x = 0;
+  while (true) {
+    if (false) {
+      x = 1;
+    } else {
+      x = 2;
+    }
+  }
+}
+fim_algoritmo

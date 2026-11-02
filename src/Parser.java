@@ -95,8 +95,10 @@ public class Parser {
     }
 
     public void condicao() {
-        expressao();
-
+        if (verificar(TokenType.LOGICO)){
+            avancar();
+        }else {
+            expressao();
         if (verificar(TokenType.IGUAL) || verificar(TokenType.DIFERENTE)
                 || verificar(TokenType.MENOR_QUE) || verificar(TokenType.MAIOR_QUE)
                 || verificar(TokenType.MAIOR_OU_IGUAL_QUE) || verificar(TokenType.MENOR_OU_IGUAL_QUE)) {
@@ -106,7 +108,7 @@ public class Parser {
         }
 
         expressao();
-    }
+    }}
 
     public void atribuicao(){
         consumir(TokenType.IDENTIFICADOR, "nome da variavel");
@@ -117,11 +119,14 @@ public class Parser {
 
     public void bloco(){
         consumir(TokenType.ABRE_CHAVE, "{");
-        while (verificar(TokenType.IDENTIFICADOR)){
-            atribuicao();
+        while (verificar(TokenType.IDENTIFICADOR) || verificar(TokenType.SE) || verificar(TokenType.ENQUANTO)) {
+            if (verificar(TokenType.IDENTIFICADOR)) {
+                atribuicao();
+            } else {
+                comando();
+            }
         }
         consumir(TokenType.FECHA_CHAVE, "}");
-
     }
 
     public void iF(){
@@ -141,13 +146,37 @@ public class Parser {
     }
 
     public void programa(){
-        consumir(TokenType.ALGORITMO,"algoritmo");
+        consumir(TokenType.ALGORITMO, "algoritmo");
         consumir(TokenType.ABRE_CHAVE, "{");
         declaracoes();
-        ifElse();
+        comandos();
         consumir(TokenType.FECHA_CHAVE, "}");
         consumir(TokenType.FIM_ALGORITMO, "fim_algoritmo");
         consumir(TokenType.EOF, "fim do arquivo");
+    }
+
+    public void enquanto(){
+        consumir(TokenType.ENQUANTO, "while");
+        consumir(TokenType.ABRE_PARENTESE, "(");
+        condicao();
+        consumir(TokenType.FECHA_PARENTESE, ")");
+        bloco();
+    }
+
+    public void comando(){
+        if (verificar(TokenType.SE)){
+            ifElse();
+        } else if(verificar(TokenType.ENQUANTO)){
+            enquanto();
+        } else {
+            erro("if ou while");
+        }
+    }
+
+    public void comandos(){
+        while (verificar(TokenType.ENQUANTO) || verificar(TokenType.SE)){
+            comando();
+        }
     }
 
 }

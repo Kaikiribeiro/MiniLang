@@ -12,18 +12,18 @@ public class Lexer {
         this.codigo = codigo;
     }
 
-    private boolean fim(){
+    private boolean fim() {
         return pos >= codigo.length();
     }
 
-    private char atual(){
+    private char atual() {
         return codigo.charAt(pos);
     }
 
-    private char proximoChar(){
+    private char proximoChar() {
         char c = codigo.charAt(pos);
         pos++;
-        if (c == '\n'){
+        if (c == '\n') {
             linha++;
             coluna = 1;
         } else {
@@ -32,8 +32,8 @@ public class Lexer {
         return c;
     }
 
-    public void pularEspaco(){
-        while (!fim() && Character.isWhitespace(atual())){
+    public void pularEspaco() {
+        while (!fim() && Character.isWhitespace(atual())) {
             proximoChar();
         }
     }
@@ -48,25 +48,35 @@ public class Lexer {
 
     private TokenType tipoPalavra(String texto) {
         switch (texto) {
-            case "int": return TokenType.INTEIRO;
-            case "double": return TokenType.REAL;
-            case "if": return TokenType.SE;
-            case "else": return TokenType.SENAO;
-            case "while": return TokenType.ENQUANTO;
-            case "algoritmo": return TokenType.ALGORITMO;
-            case "fim_algoritmo": return TokenType.FIM_ALGORITMO;
-            case "true": return TokenType.LOGICO;
-            case "false": return TokenType.LOGICO;
-            default:              return TokenType.IDENTIFICADOR;
+            case "int":
+                return TokenType.INTEIRO;
+            case "double":
+                return TokenType.REAL;
+            case "if":
+                return TokenType.SE;
+            case "else":
+                return TokenType.SENAO;
+            case "while":
+                return TokenType.ENQUANTO;
+            case "algoritmo":
+                return TokenType.ALGORITMO;
+            case "fim_algoritmo":
+                return TokenType.FIM_ALGORITMO;
+            case "true":
+                return TokenType.LOGICO;
+            case "false":
+                return TokenType.LOGICO;
+            default:
+                return TokenType.IDENTIFICADOR;
         }
     }
 
-    public List<Token> tokenizar(){
+    public List<Token> tokenizar() {
         List<Token> tokens = new ArrayList<>();
 
-        while (true){
+        while (true) {
             pularEspaco();
-            if (fim()){
+            if (fim()) {
                 break;
             }
 
@@ -74,26 +84,35 @@ public class Lexer {
             int l = linha;
             char ch = proximoChar();
 
-            switch (ch){
+            switch (ch) {
                 case '(':
-                    tokens.add(new Token(TokenType.ABRE_PARENTESE, "(", l, c)); break;
+                    tokens.add(new Token(TokenType.ABRE_PARENTESE, "(", l, c));
+                    break;
 
                 case ')':
-                    tokens.add(new Token(TokenType.FECHA_PARENTESE, ")", l, c)); break;
+                    tokens.add(new Token(TokenType.FECHA_PARENTESE, ")", l, c));
+                    break;
                 case '{':
-                    tokens.add(new Token(TokenType.ABRE_CHAVE, "{", l, c)); break;
+                    tokens.add(new Token(TokenType.ABRE_CHAVE, "{", l, c));
+                    break;
                 case '}':
-                    tokens.add(new Token(TokenType.FECHA_CHAVE, "}", l, c)); break;
+                    tokens.add(new Token(TokenType.FECHA_CHAVE, "}", l, c));
+                    break;
                 case ';':
-                    tokens.add(new Token(TokenType.PONTO_VIRGULA, ";", l, c)); break;
+                    tokens.add(new Token(TokenType.PONTO_VIRGULA, ";", l, c));
+                    break;
                 case '+':
-                    tokens.add(new Token(TokenType.MAIS, "+", l, c)); break;
+                    tokens.add(new Token(TokenType.MAIS, "+", l, c));
+                    break;
                 case '-':
-                    tokens.add(new Token(TokenType.MENOS, "-", l, c)); break;
+                    tokens.add(new Token(TokenType.MENOS, "-", l, c));
+                    break;
                 case '*':
-                    tokens.add(new Token(TokenType.VEZES, "*", l, c)); break;
+                    tokens.add(new Token(TokenType.VEZES, "*", l, c));
+                    break;
                 case '/':
-                    tokens.add(new Token(TokenType.DIVISAO, "/", l, c)); break;
+                    tokens.add(new Token(TokenType.DIVISAO, "/", l, c));
+                    break;
                 case '=':
                     if (casar('=')) {
                         tokens.add(new Token(TokenType.IGUAL, "==", l, c));
@@ -136,7 +155,8 @@ public class Lexer {
                         if (casar('.')) {
                             num.append('.');
                             while (!fim() && Character.isDigit(atual())) {
-                                num.append(proximoChar());                            }
+                                num.append(proximoChar());
+                            }
                         }
 
                         tokens.add(new Token(TokenType.NUMERO, num.toString(), l, c));
@@ -152,7 +172,8 @@ public class Lexer {
                         tokens.add(new Token(tipoPalavra(texto), texto, l, c));
                     } else {
                         System.out.printf("Erro na linha %d, coluna %d: caractere invalido '%c'%n", l, c, ch);
-                        System.exit(1);                    }
+                        System.exit(1);
+                    }
                     break;
             }
         }

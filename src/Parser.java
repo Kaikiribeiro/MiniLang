@@ -119,8 +119,10 @@ public class Parser {
 
     public void bloco(){
         consumir(TokenType.ABRE_CHAVE, "{");
-        while (verificar(TokenType.IDENTIFICADOR) || verificar(TokenType.SE) || verificar(TokenType.ENQUANTO)) {
-            if (verificar(TokenType.IDENTIFICADOR)) {
+        while (verificar(TokenType.IDENTIFICADOR) || verificar(TokenType.SE) || verificar(TokenType.ENQUANTO)
+                || verificar(TokenType.REAL) || verificar(TokenType.INTEIRO)) {
+            if (verificar(TokenType.INTEIRO) || verificar(TokenType.REAL)) {
+declaracoes();            } else if (verificar(TokenType.IDENTIFICADOR)) {
                 atribuicao();
             } else {
                 comando();
@@ -149,6 +151,7 @@ public class Parser {
         consumir(TokenType.ALGORITMO, "algoritmo");
         consumir(TokenType.ABRE_CHAVE, "{");
         declaracoes();
+        comando();
         comandos();
         consumir(TokenType.FECHA_CHAVE, "}");
         consumir(TokenType.FIM_ALGORITMO, "fim_algoritmo");

@@ -8,14 +8,15 @@ A especificação completa da linguagem está em [ESPECIFICACAO.md](ESPECIFICACA
 
 ## A linguagem
 
-Um programa MiniLang tem esta estrutura: a palavra de início, chaves, zero ou mais declarações de variáveis, zero ou mais comandos (`if` ou `while`) e a palavra de término.
+Um programa MiniLang tem esta estrutura: a palavra de início, chaves, zero ou mais declarações de variáveis, **um ou mais** comandos (`if`/`else` ou `while`, que podem ser encadeados) e a palavra de término. Dentro de cada bloco também podem existir variáveis (declarações e atribuições).
 
 ```
 algoritmo {
   int x = 0;
   int y = 0;
   while (x < 10) {
-    if (x == 5) {
+    int z = x * 2;
+    if (z > 5) {
       y = y + 1;
     } else {
       y = y + 2;
@@ -31,25 +32,25 @@ fim_algoritmo
 O enunciado deixou alguns pontos em aberto. Nesta implementação:
 
 - **O corpo do programa fica entre chaves**, entre `algoritmo` e `fim_algoritmo`.
+- **O programa tem pelo menos um comando** (`if` ou `while`), e pode ter vários em sequência.
 - **O `else` é opcional**, como em Java. Um `if` sem `else` também é válido.
-- **O programa aceita zero ou mais comandos** (`if` ou `while`) depois das declarações, um depois do outro.
-- **Dentro de um bloco cabem atribuições e outros `if` e `while`**, em qualquer nível de aninhamento. Assim são possíveis `while` sozinho, `if` com `while` dentro e `while` com `if` dentro.
+- **Dentro de um bloco cabem declarações, atribuições e outros `if` e `while`**, em qualquer nível de aninhamento. Assim são possíveis `while` sozinho, `if` com `while` dentro e `while` com `if` dentro.
 - **A condição pode ser `true`, `false` ou uma comparação**, como `x < 10`.
-- **As declarações vêm antes dos comandos.** Declarar uma variável depois de um comando gera erro.
+- **No corpo do programa, as declarações vêm antes dos comandos.** Declarar uma variável depois de um comando, fora de um bloco, gera erro.
 
 ## Gramática (EBNF)
 
 Chaves `{ }` significam "zero ou mais vezes" e colchetes `[ ]` significam "opcional".
 
 ```
-programa    → "algoritmo" "{" { declaracao } { comando } "}" "fim_algoritmo" EOF
+programa    → "algoritmo" "{" { declaracao } comando { comando } "}" "fim_algoritmo" EOF
 declaracao  → ( "int" | "double" ) ID [ "=" expressao ] ";"
 
 comando     → ifElse | enquanto
 ifElse      → "if" "(" condicao ")" bloco [ "else" bloco ]
 enquanto    → "while" "(" condicao ")" bloco
 bloco       → "{" { instrucao } "}"
-instrucao   → atribuicao | comando
+instrucao   → declaracao | atribuicao | comando
 atribuicao  → ID "=" expressao ";"
 
 condicao    → "true" | "false" | expressao opRel expressao
@@ -89,7 +90,7 @@ O programa **para no primeiro erro** encontrado.
 
 - Expressões **não aceitam parênteses**: `(2 + 3) * 4` é inválido.
 - Não há números negativos escritos com sinal (`-5`).
-- Só a **sintaxe** é verificada. O programa não confere se as variáveis foram declaradas, se os tipos combinam nem executa o código.
+- Só a **sintaxe** é verificada. O programa não confere se as variáveis foram declaradas, se os tipos combinam, nem o escopo das variáveis, e também não executa o código.
 
 ## Estrutura do repositório
 
@@ -126,29 +127,28 @@ No IntelliJ, basta abrir o projeto e executar a classe `Main`.
 
 ### Código válido
 
-Arquivos como `exemplos/valido.txt`, `exemplos/valido-while.txt`, `exemplos/valido-while-com-if.txt`, `exemplos/valido-if-com-while.txt` e `exemplos/valido-booleano.txt` produzem:
+Arquivos como `exemplos/valido.txt`, `exemplos/valido-while.txt`, `exemplos/valido-while-com-if.txt`, `exemplos/valido-if-com-while.txt`, `exemplos/valido-booleano.txt` e `exemplos/valido-declaracao-em-bloco.txt` produzem:
 
 ```
 Codigo sintaticamente correto!
 ```
 
-Exemplo com `while` sozinho e condição booleana (`exemplos/valido-booleano.txt`):
+Exemplo com declarações dentro dos blocos (`exemplos/valido-declaracao-em-bloco.txt`):
 
 ```
 algoritmo {
   int x = 0;
-  while (true) {
-    if (false) {
-      x = 1;
-    } else {
-      x = 2;
+  while (x < 10) {
+    int y = x * 2;
+    if (y > 5) {
+      double z = 1.5;
+      x = x + 1;
     }
+    x = x + 1;
   }
 }
 fim_algoritmo
 ```
-
-O programa só confere a estrutura e não executa o código, por isso o `while (true)` não trava.
 
 ### Erros
 
@@ -168,6 +168,12 @@ Erro na linha 4, coluna 14: esperado ')', mas encontrado '{'
 
 ```
 Erro na linha 3, coluna 17: esperado ')', mas encontrado '{'
+```
+
+**Programa sem nenhum comando** (`exemplos/erro-sem-comando.txt`):
+
+```
+Erro na linha 3, coluna 1: esperado 'if ou while', mas encontrado '}'
 ```
 
 **Booleano seguido de operador** (`exemplos/erro-booleano.txt`, com `if (true < 1)`):

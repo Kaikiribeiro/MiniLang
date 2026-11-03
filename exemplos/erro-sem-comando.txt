@@ -1,0 +1,4 @@
+algoritmo {
+  int x;
+}
+fim_algoritmo

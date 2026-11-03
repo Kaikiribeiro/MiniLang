@@ -6,8 +6,9 @@ Autor: Kaiki Ribeiro Avelino
 
 ## 1. Visão geral
 
-- Um programa é uma **sequência de declarações de variáveis** seguida de **zero ou mais comandos**, tudo entre uma palavra de início e uma palavra de término.
-- Os comandos são o **`if`/`else`** e o **`while`**, que podem ser combinados e aninhados.
+- Um programa é uma **sequência de declarações de variáveis** seguida de **um ou mais comandos**, tudo entre uma palavra de início e uma palavra de término.
+- Os comandos são o **`if`/`else`** e o **`while`**, que podem ser combinados, encadeados e aninhados.
+- **Variáveis podem aparecer dentro de cada bloco**, tanto declaradas quanto atribuídas.
 - A linguagem tem dois tipos de variável: `int` e `double`.
 - As condições aceitam comparações (`x < 10`) e os valores booleanos `true` e `false`.
 - O analisador **valida apenas a sintaxe** (a ordem dos tokens). Ele não executa o programa e não verifica o significado do código (veja a seção 6).
@@ -17,7 +18,7 @@ Autor: Kaiki Ribeiro Avelino
 ```
 algoritmo {
   <declarações: zero ou mais>
-  <comandos if/else e while: zero ou mais>
+  <comandos if/else e while: um ou mais>
 }
 fim_algoritmo
 ```
@@ -29,7 +30,8 @@ algoritmo {
   int x = 0;
   int y = 0;
   while (x < 10) {
-    if (x == 5) {
+    int z = x * 2;
+    if (z > 5) {
       y = y + 1;
     } else {
       y = y + 2;
@@ -112,7 +114,7 @@ Além desses tokens, o analisador léxico gera um token `EOF`, que marca o fim d
 Notação: `{ ... }` significa zero ou mais repetições, `[ ... ]` significa opcional, `|` significa alternativa, e o texto entre aspas é um token literal.
 
 ```
-programa    → "algoritmo" "{" { declaracao } { comando } "}" "fim_algoritmo" EOF
+programa    → "algoritmo" "{" { declaracao } comando { comando } "}" "fim_algoritmo" EOF
 
 declaracao  → ( "int" | "double" ) ID [ "=" expressao ] ";"
 
@@ -120,7 +122,7 @@ comando     → ifElse | enquanto
 ifElse      → "if" "(" condicao ")" bloco [ "else" bloco ]
 enquanto    → "while" "(" condicao ")" bloco
 bloco       → "{" { instrucao } "}"
-instrucao   → atribuicao | comando
+instrucao   → declaracao | atribuicao | comando
 atribuicao  → ID "=" expressao ";"
 
 condicao    → "true" | "false" | expressao opRel expressao
@@ -136,19 +138,21 @@ As regras `comando` e `bloco` se chamam mutuamente: um comando contém blocos, e
 ## 5. Regras da linguagem
 
 **Estrutura do programa**
-- As declarações vêm **antes** dos comandos. Declarar uma variável depois de um comando gera erro.
-- Pode haver **zero declarações** e **zero comandos**.
+- O programa tem **pelo menos um comando** (`if` ou `while`). Um programa sem nenhum comando gera erro.
 - Os comandos do programa podem aparecer **em sequência**: por exemplo, um `if` seguido de um `while`.
+- No corpo do programa, as declarações vêm **antes** dos comandos. Declarar uma variável depois de um comando, fora de um bloco, gera erro.
+- Pode haver **zero declarações** no corpo do programa.
 - O corpo do programa fica entre chaves, entre `algoritmo` e `fim_algoritmo`.
 
 **Declarações**
 - Uma declaração tem o tipo, o nome e, opcionalmente, um valor inicial: `int x;` ou `int x = 5;`.
 - O valor inicial pode ser uma expressão: `int x = 2 + 3 * y;`.
+- Declarações também podem aparecer **dentro de blocos**, junto com as atribuições e os outros comandos.
 
 **Comandos**
 - O `if` leva uma condição entre parênteses e um bloco. O `else` e o seu bloco são **opcionais**.
 - O `while` leva uma condição entre parênteses e um bloco.
-- Dentro de um bloco cabem atribuições, `if` e `while`, em qualquer ordem e quantidade. Isso permite `while` sozinho, `if` com `while` dentro e `while` com `if` dentro.
+- Dentro de um bloco cabem declarações, atribuições, `if` e `while`, em qualquer ordem e quantidade. Isso permite `while` sozinho, `if` com `while` dentro e `while` com `if` dentro.
 - Um bloco vazio (`{ }`) é válido.
 
 **Atribuições**
@@ -178,6 +182,7 @@ A gramática não prevê:
 
 - se uma variável foi declarada antes do uso;
 - se uma variável foi declarada mais de uma vez;
+- o escopo das variáveis declaradas dentro de blocos;
 - se os tipos combinam (`int x = 2.5;` é aceito);
 - divisão por zero;
 - laços infinitos (`while (true)` é aceito).
@@ -209,7 +214,8 @@ O analisador léxico lê o arquivo inteiro antes de o analisador sintático come
 |---|---|
 | `algoritmo` | o programa não começa com a palavra de início |
 | `{` | falta a chave que abre o programa ou um bloco |
-| `}` | falta a chave que fecha um bloco ou o programa. Também aparece quando surge algo que não é declaração nem comando, como uma declaração depois de um comando |
+| `}` | falta a chave que fecha um bloco ou o programa. Também aparece quando surge algo que não é declaração nem comando no corpo do programa, como uma declaração depois de um comando |
+| `if ou while` | o programa não tem nenhum comando |
 | `nome da variavel` | falta o nome em uma declaração |
 | `=` | falta o `=` em uma atribuição |
 | `;` | falta o ponto e vírgula |
@@ -260,6 +266,23 @@ algoritmo {
       y = y + 1;
     } else {
       y = y + 2;
+    }
+    x = x + 1;
+  }
+}
+fim_algoritmo
+```
+
+**Declarações dentro dos blocos**
+
+```
+algoritmo {
+  int x = 0;
+  while (x < 10) {
+    int y = x * 2;
+    if (y > 5) {
+      double z = 1.5;
+      x = x + 1;
     }
     x = x + 1;
   }
@@ -326,14 +349,6 @@ algoritmo {
 fim_algoritmo
 ```
 
-**Sem declarações e sem comandos**
-
-```
-algoritmo {
-}
-fim_algoritmo
-```
-
 ## 9. Exemplos inválidos
 
 **Falta o `;` em uma declaração**
@@ -368,6 +383,19 @@ fim_algoritmo
 Erro na linha 3, coluna 17: esperado ')', mas encontrado '{'
 ```
 
+**Programa sem nenhum comando**
+
+```
+algoritmo {
+  int x;
+}
+fim_algoritmo
+```
+
+```
+Erro na linha 3, coluna 1: esperado 'if ou while', mas encontrado '}'
+```
+
 **Booleano seguido de operador**
 
 ```
@@ -397,7 +425,7 @@ fim_algoritmo
 Erro na linha 2, coluna 11: esperado 'numero ou variavel', mas encontrado '('
 ```
 
-**Declaração depois de um comando**
+**Declaração depois de um comando, fora de um bloco**
 
 ```
 algoritmo {
@@ -435,11 +463,11 @@ O enunciado deixou alguns pontos em aberto. Nesta implementação:
 |---|---|
 | Palavras de início e término | `algoritmo` e `fim_algoritmo` |
 | Corpo do programa | entre chaves, dentro das palavras de início e término |
-| Comandos do programa | zero ou mais, `if`/`else` ou `while`, em sequência |
+| Comandos do programa | um ou mais, `if`/`else` ou `while`, em sequência |
 | `else` | opcional, como em Java |
-| Conteúdo dos blocos | atribuições, `if` e `while`, com aninhamento livre |
+| Conteúdo dos blocos | declarações, atribuições, `if` e `while`, com aninhamento livre |
 | Valores booleanos | `true` e `false`, como em Java, aceitos apenas em condições |
-| Ordem | declarações antes dos comandos |
+| Ordem no corpo do programa | declarações antes dos comandos |
 
 ## 11. Relação com a implementação
 
@@ -452,7 +480,7 @@ Cada regra da gramática corresponde a um método da classe `Parser`:
 | `comando` | `comando()` (e `comandos()` para a repetição) |
 | `ifElse` | `ifElse()` (que usa `iF()` para a parte do `if`) |
 | `enquanto` | `enquanto()` |
-| `bloco` | `bloco()` |
+| `bloco` e `instrucao` | `bloco()` |
 | `atribuicao` | `atribuicao()` |
 | `condicao` | `condicao()` |
 | `expressao` | `expressao()` |

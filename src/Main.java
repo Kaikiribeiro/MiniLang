@@ -6,11 +6,11 @@ public class Main {
     public static void main(String[] args) throws Exception {
         String codigo = Files.readString(Path.of("exemplos/valido.txt"));
 
-        Lexer lexer = new Lexer(codigo);
-        List<Token> tokens = lexer.tokenizar();
+        AnalisadorLexico analisadorLexico = new AnalisadorLexico(codigo);
+        List<Token> tokens = analisadorLexico.tokenizar();
 
-        Parser parser = new Parser(tokens);
-        parser.programa();
+        AnalisadorSintatico analisadorSintatico = new AnalisadorSintatico(tokens);
+        analisadorSintatico.programa();
 
         System.out.println("Codigo sintaticamente correto!");
     }

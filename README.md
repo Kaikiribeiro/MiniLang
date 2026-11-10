@@ -76,13 +76,13 @@ As regras `bloco` e `comando` se chamam mutuamente (um bloco contém comandos, e
 
 | Classe | Função |
 |---|---|
-| `TokenType` | `enum` com todas as categorias de token |
+| `TipoToken` | `enum` com todas as categorias de token |
 | `Token` | guarda o tipo, o texto, a linha e a coluna de um token |
-| `Lexer` | lê o texto do código letra por letra e gera a lista de tokens, contando linha e coluna |
-| `Parser` | recebe a lista de tokens e confere se ela segue a gramática. Tem um método para cada regra, usando descida recursiva |
-| `Main` | lê o arquivo, executa o `Lexer`, depois o `Parser`, e mostra o resultado |
+| `AnalisadorLexico` | lê o texto do código letra por letra e gera a lista de tokens, contando linha e coluna |
+| `AnalisadorSintatico` | recebe a lista de tokens e confere se ela segue a gramática. Tem um método para cada regra, usando descida recursiva |
+| `Main` | lê o arquivo, executa o `AnalisadorLexico`, depois o `AnalisadorSintatico`, e mostra o resultado |
 
-O `Parser` usa quatro métodos de apoio: `peek()` (olha o token atual), `avancar()` (passa para o próximo), `verificar(tipo)` (confere o tipo do token atual) e `consumir(tipo, esperado)` (exige um tipo e mostra o erro se não for ele).
+O `AnalisadorSintatico` usa quatro métodos de apoio: `atual()` (olha o token atual), `proximoToken()` (passa para o próximo), `verificar(tipo)` (confere o tipo do token atual) e `consumir(tipo, esperado)` (exige um tipo e mostra o erro se não for ele).
 
 O programa **para no primeiro erro** encontrado.
 
@@ -97,10 +97,10 @@ O programa **para no primeiro erro** encontrado.
 ```
 ├── src/
 │   ├── Main.java
-│   ├── TokenType.java
+│   ├── TipoToken.java
 │   ├── Token.java
-│   ├── Lexer.java
-│   └── Parser.java
+│   ├── AnalisadorLexico.java
+│   └── AnalisadorSintatico.java
 ├── exemplos/
 │   ├── valido*.txt
 │   └── erro-*.txt

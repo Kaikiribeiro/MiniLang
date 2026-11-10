@@ -1,4 +1,4 @@
-public enum TokenType {
+public enum TipoToken {
     ALGORITMO,
     FIM_ALGORITMO,
     INTEIRO,

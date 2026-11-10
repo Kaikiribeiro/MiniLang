@@ -1,17 +1,17 @@
 public class Token {
-    private final TokenType tipo;
+    private final TipoToken tipo;
     private String texto;
     private int linha;
     private int coluna;
 
-    public Token(TokenType tipo, String texto, int linha, int coluna) {
+    public Token(TipoToken tipo, String texto, int linha, int coluna) {
         this.tipo = tipo;
         this.texto = texto;
         this.linha = linha;
         this.coluna = coluna;
     }
 
-    public TokenType getTipo() {
+    public TipoToken getTipo() {
         return tipo;
     }
 

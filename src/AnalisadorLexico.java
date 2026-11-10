@@ -1,14 +1,14 @@
 import java.util.List;
 import java.util.ArrayList;
 
-public class Lexer {
+public class AnalisadorLexico {
 
     private String codigo;
     private int pos = 0;
     private int linha = 1;
     private int coluna = 1;
 
-    public Lexer(String codigo) {
+    public AnalisadorLexico(String codigo) {
         this.codigo = codigo;
     }
 
@@ -46,28 +46,28 @@ public class Lexer {
         return true;
     }
 
-    private TokenType tipoPalavra(String texto) {
+    private TipoToken tipoPalavra(String texto) {
         switch (texto) {
             case "int":
-                return TokenType.INTEIRO;
+                return TipoToken.INTEIRO;
             case "double":
-                return TokenType.REAL;
+                return TipoToken.REAL;
             case "if":
-                return TokenType.SE;
+                return TipoToken.SE;
             case "else":
-                return TokenType.SENAO;
+                return TipoToken.SENAO;
             case "while":
-                return TokenType.ENQUANTO;
+                return TipoToken.ENQUANTO;
             case "algoritmo":
-                return TokenType.ALGORITMO;
+                return TipoToken.ALGORITMO;
             case "fim_algoritmo":
-                return TokenType.FIM_ALGORITMO;
+                return TipoToken.FIM_ALGORITMO;
             case "true":
-                return TokenType.LOGICO;
+                return TipoToken.LOGICO;
             case "false":
-                return TokenType.LOGICO;
+                return TipoToken.LOGICO;
             default:
-                return TokenType.IDENTIFICADOR;
+                return TipoToken.IDENTIFICADOR;
         }
     }
 
@@ -86,57 +86,57 @@ public class Lexer {
 
             switch (ch) {
                 case '(':
-                    tokens.add(new Token(TokenType.ABRE_PARENTESE, "(", l, c));
+                    tokens.add(new Token(TipoToken.ABRE_PARENTESE, "(", l, c));
                     break;
 
                 case ')':
-                    tokens.add(new Token(TokenType.FECHA_PARENTESE, ")", l, c));
+                    tokens.add(new Token(TipoToken.FECHA_PARENTESE, ")", l, c));
                     break;
                 case '{':
-                    tokens.add(new Token(TokenType.ABRE_CHAVE, "{", l, c));
+                    tokens.add(new Token(TipoToken.ABRE_CHAVE, "{", l, c));
                     break;
                 case '}':
-                    tokens.add(new Token(TokenType.FECHA_CHAVE, "}", l, c));
+                    tokens.add(new Token(TipoToken.FECHA_CHAVE, "}", l, c));
                     break;
                 case ';':
-                    tokens.add(new Token(TokenType.PONTO_VIRGULA, ";", l, c));
+                    tokens.add(new Token(TipoToken.PONTO_VIRGULA, ";", l, c));
                     break;
                 case '+':
-                    tokens.add(new Token(TokenType.MAIS, "+", l, c));
+                    tokens.add(new Token(TipoToken.MAIS, "+", l, c));
                     break;
                 case '-':
-                    tokens.add(new Token(TokenType.MENOS, "-", l, c));
+                    tokens.add(new Token(TipoToken.MENOS, "-", l, c));
                     break;
                 case '*':
-                    tokens.add(new Token(TokenType.VEZES, "*", l, c));
+                    tokens.add(new Token(TipoToken.VEZES, "*", l, c));
                     break;
                 case '/':
-                    tokens.add(new Token(TokenType.DIVISAO, "/", l, c));
+                    tokens.add(new Token(TipoToken.DIVISAO, "/", l, c));
                     break;
                 case '=':
                     if (casar('=')) {
-                        tokens.add(new Token(TokenType.IGUAL, "==", l, c));
+                        tokens.add(new Token(TipoToken.IGUAL, "==", l, c));
                     } else {
-                        tokens.add(new Token(TokenType.ATRIBUICAO, "=", l, c));
+                        tokens.add(new Token(TipoToken.ATRIBUICAO, "=", l, c));
                     }
                     break;
                 case '<':
                     if (casar('=')) {
-                        tokens.add(new Token(TokenType.MENOR_OU_IGUAL_QUE, "<=", l, c));
+                        tokens.add(new Token(TipoToken.MENOR_OU_IGUAL_QUE, "<=", l, c));
                     } else {
-                        tokens.add(new Token(TokenType.MENOR_QUE, "<", l, c));
+                        tokens.add(new Token(TipoToken.MENOR_QUE, "<", l, c));
                     }
                     break;
                 case '>':
                     if (casar('=')) {
-                        tokens.add(new Token(TokenType.MAIOR_OU_IGUAL_QUE, ">=", l, c));
+                        tokens.add(new Token(TipoToken.MAIOR_OU_IGUAL_QUE, ">=", l, c));
                     } else {
-                        tokens.add(new Token(TokenType.MAIOR_QUE, ">", l, c));
+                        tokens.add(new Token(TipoToken.MAIOR_QUE, ">", l, c));
                     }
                     break;
                 case '!':
                     if (casar('=')) {
-                        tokens.add(new Token(TokenType.DIFERENTE, "!=", l, c));
+                        tokens.add(new Token(TipoToken.DIFERENTE, "!=", l, c));
                     } else {
                         System.out.printf("Erro na linha %d, coluna %d: esperado '=' depois de '!'%n", l, c);
                         System.exit(1);
@@ -159,7 +159,7 @@ public class Lexer {
                             }
                         }
 
-                        tokens.add(new Token(TokenType.NUMERO, num.toString(), l, c));
+                        tokens.add(new Token(TipoToken.NUMERO, num.toString(), l, c));
                     } else if (Character.isLetter(ch) || ch == '_') {
                         StringBuilder palavra = new StringBuilder();
                         palavra.append(ch);
@@ -177,7 +177,7 @@ public class Lexer {
                     break;
             }
         }
-        tokens.add(new Token(TokenType.EOF, "", linha, coluna));
+        tokens.add(new Token(TipoToken.EOF, "", linha, coluna));
         return tokens;
     }
 }

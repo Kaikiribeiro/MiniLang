@@ -1,6 +1,6 @@
 # Especificação da linguagem MiniLang
 
-MiniLang é uma linguagem imperativa simplificada, criada para o trabalho de analisador sintático. Este documento define a estrutura léxica (os tokens), a gramática e as regras da linguagem, conforme implementado no `Lexer` e no `Parser` deste repositório.
+MiniLang é uma linguagem imperativa simplificada, criada para o trabalho de analisador sintático. Este documento define a estrutura léxica (os tokens), a gramática e as regras da linguagem, conforme implementado no `AnalisadorLexico` e no `AnalisadorSintatico` deste repositório.
 
 Autor: Kaiki Ribeiro Avelino
 
@@ -471,7 +471,7 @@ O enunciado deixou alguns pontos em aberto. Nesta implementação:
 
 ## 11. Relação com a implementação
 
-Cada regra da gramática corresponde a um método da classe `Parser`:
+Cada regra da gramática corresponde a um método da classe `AnalisadorSintatico`:
 
 | Regra | Método |
 |---|---|
@@ -487,4 +487,4 @@ Cada regra da gramática corresponde a um método da classe `Parser`:
 | `termo` | `termo()` |
 | `fator` | `fator()` |
 
-A análise léxica é feita pela classe `Lexer`, e os tokens são descritos pelas classes `Token` e `TokenType`.
+A análise léxica é feita pela classe `AnalisadorLexico`, e os tokens são descritos pelas classes `Token` e `TipoToken`.
